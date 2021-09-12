@@ -1,0 +1,47 @@
+---
+title: "Global Ecological Footprint"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(tidygeocoder)
+# token activation from mapbox.com
+Sys.setenv('MAPBOX_TOKEN' = 
+             'pk.eyJ1IjoicmF2aW5kZXIzODciLCJhIjoiY2twajRld2NzMzdtaDJ1bnhkZTk1NHFvNSJ9.8ZLJBIuSygFrnzSnaoCyWA')
+# data import
+data <- read_csv('countries.csv')
+# add long and lat to countries
+new_data <- data %>%
+  geocode(Country, method = 'osm', lat = latitude , long = longitude)
+rm(data)
+```
+
+Row {data-width=1000}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+plot_mapbox(new_data) %>%
+  add_markers(
+    x = ~longitude, 
+    y = ~latitude, 
+    size = ~`Population (millions)`, 
+    color = ~Region,
+    colors = "Accent",
+    text = ~paste(`Total Ecological Footprint`,`Total Biocapacity`, `Biocapacity Deficit or Reserve`),
+    hoverinfo = "text"
+  )
+
+```
+
+
+
+
+

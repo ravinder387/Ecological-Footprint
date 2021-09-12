@@ -1,0 +1,68 @@
+---
+title: "Global Ecological Footprint"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+# token activation from mapbox.com
+Sys.setenv('MAPBOX_TOKEN' = 
+             'pk.eyJ1IjoicmF2aW5kZXIzODciLCJhIjoiY2twajRld2NzMzdtaDJ1bnhkZTk1NHFvNSJ9.8ZLJBIuSygFrnzSnaoCyWA')
+# data import
+data <- read_csv('data.csv')
+# table to render
+#text = ~paste(`Total Ecological Footprint`,`Total Biocapacity`, `Biocapacity #Deficit or Reserve`)
+#tb <- data.frame(Total Ecological )
+```
+# Overview
+Columns {data-width=1000}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+plot_mapbox(data) %>%
+  add_markers(
+    x = ~longitude, 
+    y = ~latitude, 
+    size = ~`Population (millions)`, 
+    color = ~Region,
+    colors = "Accent",
+    text = ~paste(`Total Ecological Footprint`,`Total Biocapacity`, `Biocapacity Deficit or Reserve`),
+    hoverinfo = "text"
+  )
+
+```
+# Deficit or Reserve
+Columns {data-width=500}
+-----------------------------------------------------------------------
+
+### Choropleths
+```{r}
+
+```
+
+Columns {data-width=500}
+-----------------------------------------------------------------------
+
+### Correlation between HDI and Deficit or Reserve
+```{r}
+h <- ggplot(data) +
+  geom_point(mapping = aes(x = HDI, y =`Biocapacity Deficit or Reserve`, 
+                           size = `Population (millions)`))
+ggplotly(h)
+```
+
+### Correlation between Population and Deficit or Reserve
+```{r}
+p <- ggplot(data) +
+  geom_point(mapping = aes(x = `Population (millions)`, y =`Biocapacity Deficit or Reserve`, size = `Population (millions)`))
+ggplotly(p)
+```
+
+
